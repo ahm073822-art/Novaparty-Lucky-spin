@@ -929,10 +929,11 @@ linear infinite;
         height: 900px; 
         margin: 0 !important; 
         position: absolute; 
-        transform: scale(0.7); 
+        transform: scale(0.5); 
         transform-origin: center center; 
     }
 
 }
+
 
 

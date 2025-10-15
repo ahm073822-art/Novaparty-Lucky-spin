@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    // 💡 INISIALISASI WAJIB: Memastikan WebApp siap
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.ready();
+        
+        if (window.Telegram.WebApp.MainButton) {
+            window.Telegram.WebApp.MainButton.hide();
+            console.log("✅ Telegram MainButton disembunyikan untuk mencegah penutupan instan.");
+        }
     }
     
     const A17 = document.querySelector('.A17');
@@ -26,11 +30,43 @@ document.addEventListener('DOMContentLoaded', (event) => {
     };
 
     let spriteMap = {};
-    const files = ['1']; // Asumsi vollkorn_96_1.xml ada
-    
-    // Asumsi fungsi displayNewSpriteText didefinisikan di suatu tempat
-    function displayNewSpriteText(container, map, textToDisplay) { 
-        container.innerHTML = textToDisplay; // Simplified for demo
+    const files = ['1'];
+
+    function displayNewSpriteText(container, map, textToDisplay) {
+        container.innerHTML = '';
+
+        for (const char of textToDisplay) {
+            const charData = map[char];
+
+            if (charData) {
+                const charElement = document.createElement('span');
+                charElement.classList.add('sprite-char');
+
+                charElement.style.backgroundImage = `url(${charData.image})`;
+                charElement.style.backgroundPosition = charData.position;
+                charElement.style.width = charData.width;
+                charElement.style.height = charData.height;
+                charElement.style.marginRight = charData.advance;
+                charElement.style.display = 'inline-block';
+
+                container.appendChild(charElement);
+            } else if (char === ' ') {
+                const spaceElement = document.createElement('span');
+                spaceElement.classList.add('sprite-space');
+
+                const spaceData = map[String.fromCharCode(32)];
+                spaceElement.style.width = spaceData ? spaceData.advance : '20px';
+
+                spaceElement.style.display = 'inline-block';
+                container.appendChild(spaceElement);
+            } else {
+                const missingChar = document.createElement('span');
+                missingChar.textContent = char;
+                missingChar.style.fontSize = '32px';
+                missingChar.style.color = 'red';
+                container.appendChild(missingChar);
+            }
+        }
     }
 
     if (A17 && A4 && A5) {
@@ -79,22 +115,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             textContainer.style.visibility = 'visible';
                             textContainer.classList.add('blinking-neon-animation');
 
-                            // 🚨 BAGIAN KRITIS PENGIRIMAN DATA KE BOT
                             if (window.Telegram && window.Telegram.WebApp) {
                                 const dataUntukBot = JSON.stringify({
                                     hasil_spin: resultText,
                                     sudut: selectedAngle
                                 });
                                 
-                                console.log("DATA DIKIRIM KE BOT:", dataUntukBot); // Log untuk debugging
+                                console.log("DATA DIKIRIM KE BOT:", dataUntukBot);
                                 window.Telegram.WebApp.sendData(dataUntukBot);
-                                
-                                // Beri jeda 2 detik agar bot sempat menerima data sebelum Web App tertutup
+
+                                const WAKTU_JEDA = 5000; 
+                                console.log(`⏳ JEDA DIMULAI. App akan menutup dalam ${WAKTU_JEDA / 1000} detik.`);
+
                                 setTimeout(() => {
+                                    console.log("✅ Waktu jeda selesai. Memanggil close().");
                                     window.Telegram.WebApp.close();
-                                }, 10000); 
+                                }, WAKTU_JEDA); 
                             } else {
-                                console.error("GAGAL! Telegram WebApp API tidak ditemukan.");
+                                console.error("❌ GAGAL! Telegram WebApp API tidak ditemukan.");
                             }
 
                         } else {
@@ -106,8 +144,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }, 10);
         });
     }
-    
-    // ----------- KODE FONT/SPRITEMAP LENGKAP ANDA (BAGIAN YANG HILANG) -----------
+
     Promise.all(
         files.map(file =>
             fetch(`vollkorn_96_${file}.xml`)
@@ -167,41 +204,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
             textContainer.style.visibility = 'visible';
         }
     });
-
-    function displayNewSpriteText(container, map, textToDisplay) {
-        container.innerHTML = '';
-
-        for (const char of textToDisplay) {
-            const charData = map[char];
-
-            if (charData) {
-                const charElement = document.createElement('span');
-                charElement.classList.add('sprite-char');
-
-                charElement.style.backgroundImage = `url(${charData.image})`;
-                charElement.style.backgroundPosition = charData.position;
-                charElement.style.width = charData.width;
-                charElement.style.height = charData.height;
-                charElement.style.marginRight = charData.advance;
-                charElement.style.display = 'inline-block';
-
-                container.appendChild(charElement);
-            } else if (char === ' ') {
-                const spaceElement = document.createElement('span');
-                spaceElement.classList.add('sprite-space');
-
-                const spaceData = map[String.fromCharCode(32)];
-                spaceElement.style.width = spaceData ? spaceData.advance : '20px';
-
-                spaceElement.style.display = 'inline-block';
-                container.appendChild(spaceElement);
-            } else {
-                const missingChar = document.createElement('span');
-                missingChar.textContent = char;
-                missingChar.style.fontSize = '32px';
-                missingChar.style.color = 'red';
-                container.appendChild(missingChar);
-            }
-        }
-    }
 });

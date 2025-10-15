@@ -24,9 +24,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let selectedAngle = null;
 
     const resultMap = {
-        '405': '1000', '495': '4000', '450': '5000',
-        '586': '2000', '676': '3000', '360': '8000',
-        '631': '6000', '540': '7000'
+        '405': '1000',
+        '495': '4000',
+        '450': '5000',
+        '586': '2000',
+        '676': '3000',
+        '360': '8000',
+        '631': '6000',
+        '540': '7000'
     };
 
     let spriteMap = {};
@@ -120,17 +125,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
                                     hasil_spin: resultText,
                                     sudut: selectedAngle
                                 });
+
+                                const WAKTU_TAMPIL = 5000; 
+                                console.log(`⏳ JEDA DIMULAI. Hasil spin ditampilkan selama ${WAKTU_TAMPIL / 1000} detik.`);
                                 
-                                console.log("DATA DIKIRIM KE BOT:", dataUntukBot);
-                                window.Telegram.WebApp.sendData(dataUntukBot);
-
-                                const WAKTU_JEDA = 5000; 
-                                console.log(`⏳ JEDA DIMULAI. App akan menutup dalam ${WAKTU_JEDA / 1000} detik.`);
-
                                 setTimeout(() => {
-                                    console.log("✅ Waktu jeda selesai. Memanggil close().");
-                                    window.Telegram.WebApp.close();
-                                }, WAKTU_JEDA); 
+                                    
+                                    console.log("DATA DIKIRIM KE BOT:", dataUntukBot);
+                                    window.Telegram.WebApp.sendData(dataUntukBot);
+
+                                    setTimeout(() => {
+                                        console.log("✅ Jeda selesai. Memanggil close().");
+                                        window.Telegram.WebApp.close();
+                                    }, 500); 
+
+                                }, WAKTU_TAMPIL);\
+
                             } else {
                                 console.error("❌ GAGAL! Telegram WebApp API tidak ditemukan.");
                             }

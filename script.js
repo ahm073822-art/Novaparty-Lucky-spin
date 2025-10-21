@@ -88,10 +88,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                                 
                                 console.log("DATA DIKIRIM KE BOT:", dataUntukBot);
                                 window.Telegram.WebApp.sendData(dataUntukBot);
-                                
-                                setTimeout(() => {
-                                    window.Telegram.WebApp.close();
-                                }, 10000); 
+                              
+                                window.Telegram.WebApp.close();
                             } else {
                                 console.error("GAGAL! Telegram WebApp API tidak ditemukan.");
                             }
@@ -204,3 +202,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 });
+

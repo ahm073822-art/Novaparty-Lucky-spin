@@ -25,10 +25,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     };
 
     let spriteMap = {};
-    const files = ['1'];
+    const files = ['1']; 
     
     function displayNewSpriteText(container, map, textToDisplay) { 
-        container.innerHTML = textToDisplay; // Simplified for demo
+        container.innerHTML = textToDisplay;
     }
 
     if (A17 && A4 && A5) {
@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 selectedAngle = stops[Math.floor(Math.random() * stops.length)];
 
                 const totalSpins = (5 * 360) + selectedAngle;
-                const transitionDuration = 3;
-
+                const transitionDuration = 3; // Durasi animasi spin
+                
                 A4.style.transition = `transform ${transitionDuration}s ease-out`;
                 A5.style.transition = `transform ${transitionDuration}s linear`;
                 A4.style.transform = `rotate(${totalSpins}deg)`;
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             textContainer.style.visibility = 'visible';
                             textContainer.classList.add('blinking-neon-animation');
 
-                            const CLOSE_DELAY_MS = 3000; 
+                            const JEDA_PENUTUPAN_MS = 3000; 
 
                             setTimeout(() => {
                                 if (window.Telegram && window.Telegram.WebApp) {
@@ -93,18 +93,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
                                 } else {
                                     console.error("GAGAL! Telegram WebApp API tidak ditemukan.");
                                 }
-                            }, CLOSE_DELAY_MS);
+                            }, JEDA_PENUTUPAN_MS); 
 
                         } else {
                             textContainer.textContent = `ERROR: No result for ${selectedAngle}`;
                         }
                     }
-                }, delayTime);
+                }, delayTime); // Timeout ini memastikan hasil ditampilkan setelah spin selesai
 
             }, 10);
         });
     }
-  
+    
     Promise.all(
         files.map(file =>
             fetch(`vollkorn_96_${file}.xml`)

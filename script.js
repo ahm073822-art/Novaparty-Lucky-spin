@@ -14,8 +14,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (A15) { A15.style.visibility = 'hidden'; }
     if (A18) { A18.style.visibility = 'hidden'; }
     
-    const highPriorityStops = [405, 495, 450, 586, 676];
-    const lowPriorityStops = [360, 631, 540];
+    const highPriorityStops = [405, 586, 676];
+    const mediumPriorityStops = [360, 495, 450];
+    const lowPriorityStops = [631, 540];
+
+    const PROBABILITY_HIGH = 0.75;
+    const PROBABILITY_MEDIUM = 0.20;
+    const PROBABILITY_LOW = 0.05;
+
     let selectedAngle = null;
 
     const resultMap = {
@@ -50,11 +56,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
             A5.style.transform = 'rotate(0deg)';
 
             setTimeout(() => {
-                const stops = Math.random() < 0.8 ? highPriorityStops : lowPriorityStops;
+                const rand = Math.random();
+                let stops;
+
+                if (rand < PROBABILITY_LOW) {
+                    stops = lowPriorityStops;
+                    console.log("MEMILIH: Low Priority Stop");
+                } else if (rand < PROBABILITY_LOW + PROBABILITY_MEDIUM) {
+                    stops = mediumPriorityStops;
+                    console.log("MEMILIH: Medium Priority Stop");
+                } else {
+                    stops = highPriorityStops;
+                    console.log("MEMILIH: High Priority Stop");
+                }
+                
                 selectedAngle = stops[Math.floor(Math.random() * stops.length)];
 
                 const totalSpins = (5 * 360) + selectedAngle;
-                const transitionDuration = 3; // Durasi animasi spin
+                const transitionDuration = 3;
                 
                 A4.style.transition = `transform ${transitionDuration}s ease-out`;
                 A5.style.transition = `transform ${transitionDuration}s linear`;
@@ -99,7 +118,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             textContainer.textContent = `ERROR: No result for ${selectedAngle}`;
                         }
                     }
-                }, delayTime); // Timeout ini memastikan hasil ditampilkan setelah spin selesai
+                }, delayTime);
 
             }, 10);
         });

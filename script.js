@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (A15) { A15.style.visibility = 'hidden'; }
     if (A18) { A18.style.visibility = 'hidden'; }
     
-    const highPriorityStops = [405, 586, 676];
-    const mediumPriorityStops = [360, 495, 450];
-    const lowPriorityStops = [631, 540];
+    const highPriorityStops = [405, 586, 676, 495];
+    const mediumPriorityStops = [631, 450];
+    const lowPriorityStops = [360, 540];
 
     const PROBABILITY_HIGH = 0.75;
     const PROBABILITY_MEDIUM = 0.20;
@@ -25,9 +25,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let selectedAngle = null;
 
     const resultMap = {
-        '405': '1000', '495': '4000', '450': '5000',
-        '586': '2000', '676': '3000', '360': '8000',
-        '631': '6000', '540': '7000'
+        '405': '1000',
+        '586': '2000',
+        '676': '3000',
+        '495': '4000', 
+        '450': '5000',
+        '631': '6000',
+        '540': '7000', 
+        '360': '8000'
     };
 
     let spriteMap = {};
@@ -221,3 +226,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 });
+

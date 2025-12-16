@@ -4,41 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Lucky Spin Mini App</title>
+    
     <link rel="stylesheet" href="style.css">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> 
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <script src="script.js" defer></script>
 </head>
 <body>
     
-    <div id="game-wrapper">
+    <div id="preloader">
+        <img src="JKLSADBHGLDFG.png" alt="Logo" class="main-logo">
         
-        <div class="scene">
-            <div class="A1"></div>
-            <div class="A2"></div>
-            <div class="A3"></div>
-            <div class="A4"></div>
-            <div class="A5"></div>
-            <div class="A6"></div>
-            <div class="A7"></div>
-            <div class="A8"></div>
-            <div class="A9"></div>
-            <div class="A10"></div>
-            <div class="A11"></div>
-            <div class="A12"></div>
-            <div class="A15"></div>
-            <div class="A16"></div>
-            <div class="A17"></div>
-            <div class="A18"></div>
-            <div class="A19"></div>
-            <div class="A20"></div>
-            <div class="A21"></div>
-            <div class="AA1"></div>
-            <div class="AA2"></div>
-            <div class="AA3"></div>
-            <div id="teks-wrapper">
-            </div>
-        </div>
+        <img src="loading.svg" alt="Loading..." class="loading-anim">
         
+        <p class="loading-text">Menyiapkan hadiah...</p>
     </div>
-</body>
+    
+    <div id="content">
+        
+        <div id="game-wrapper">
+            
+            <div class="scene">
+                <div class="A1"></div>
+                <div class="A2"></div>
+                <div class="A3"></div>
+                <div class="A4"></div>
+                <div class="A5"></div>
+                <div class="A6"></div>
+                <div class="A7"></div>
+                <div class="A8"></div>
+                <div class="A9"></div>
+                <div class="A10"></div>
+                <div class="A11"></div>
+                <div class="A12"></div>
+                <div class="A15"></div>
+                <div class="A16"></div>
+                <div class="A17"></div>
+                <div class="A18"></div>
+                <div class="A19"></div>
+                <div class="A20"></div>
+                <div class="A21"></div>
+                <div class="AA1"></div>
+                <div class="AA2"></div>
+                <div class="AA3"></div>
+
+                <div id="teks-wrapper">
+                    </div>
+            </div>
+            
+        </div> <button id="spin-button">PUTAR</button>
+
+    </div> </body>
 </html>

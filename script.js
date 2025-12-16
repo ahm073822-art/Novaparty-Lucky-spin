@@ -1,8 +1,7 @@
 function showContent() {
     setTimeout(() => {
         document.body.classList.add('loaded');
-        console.log("Aplikasi siap: Konten ditampilkan.");
-    }, 500);
+    }, 1000);
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -10,6 +9,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
     }
+    
     const A17 = document.querySelector('.A17');
     const A4 = document.querySelector('.A4');
     const A5 = document.querySelector('.A5');
@@ -38,32 +38,55 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     let spriteMap = {};
     const files = ['1'];
+
+    function waitForImages() {
+        const images = document.querySelectorAll('img');
+        const bgElements = document.querySelectorAll('.scene div');
+        const promises = [];
+
+        images.forEach(img => {
+            if (!img.complete) {
+                promises.push(new Promise(resolve => {
+                    img.onload = img.onerror = resolve;
+                }));
+            }
+        });
+
+        bgElements.forEach(el => {
+            const bg = window.getComputedStyle(el).backgroundImage;
+            if (bg && bg !== 'none') {
+                const urlMatch = bg.match(/url\(["']?([^"']*)["']?\)/);
+                if (urlMatch) {
+                    promises.push(new Promise(resolve => {
+                        const img = new Image();
+                        img.onload = img.onerror = resolve;
+                        img.src = urlMatch[1];
+                    }));
+                }
+            }
+        });
+        return Promise.all(promises);
+    }
     
     function displayNewSpriteText(container, map, textToDisplay) {
         container.innerHTML = '';
-        
         for (const char of textToDisplay) {
             const charData = map[char];
-
             if (charData) {
                 const charElement = document.createElement('span');
                 charElement.classList.add('sprite-char');
-
                 charElement.style.backgroundImage = `url(${charData.image})`;
                 charElement.style.backgroundPosition = charData.position;
                 charElement.style.width = charData.width;
                 charElement.style.height = charData.height;
                 charElement.style.marginRight = charData.advance;
                 charElement.style.display = 'inline-block';
-
                 container.appendChild(charElement);
             } else if (char === ' ') {
                 const spaceElement = document.createElement('span');
                 spaceElement.classList.add('sprite-space');
-
                 const spaceData = map[String.fromCharCode(32)];
                 spaceElement.style.width = spaceData ? spaceData.advance : '20px';
-
                 spaceElement.style.display = 'inline-block';
                 container.appendChild(spaceElement);
             } else {
@@ -76,50 +99,42 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
-    Promise.all(
-        files.map(file =>
-            fetch(`vollkorn_96_${file}.xml`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Gagal memuat XML: vollkorn_96_${file}.xml. Status: ${response.status}`);
+    const fontPromises = files.map(file =>
+        fetch(`vollkorn_96_${file}.xml`)
+        .then(response => {
+            if (!response.ok) throw new Error();
+            return response.text();
+        })
+        .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+        .then(data => {
+            const symbols = data.querySelectorAll('char');
+            symbols.forEach(symbol => {
+                const charCode = symbol.getAttribute('id');
+                let char;
+                if (charCode === '32') { char = ' '; } 
+                else if (charCode === '44') { char = ','; } 
+                else { char = String.fromCharCode(parseInt(charCode, 10)); }
+                const x = symbol.getAttribute('x');
+                const y = symbol.getAttribute('y');
+                const width = symbol.getAttribute('width');
+                const height = symbol.getAttribute('height');
+                const xadvance = symbol.getAttribute('xadvance') || width;
+                const imageName = `vollkorn_96_${file}.png`;
+                if (char && char.trim() !== '') {
+                    spriteMap[char] = {
+                        position: `-${x}px -${y}px`,
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        advance: `${xadvance}px`,
+                        image: imageName
+                    };
                 }
-                return response.text();
-            })
-            .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
-            .then(data => {
-                const symbols = data.querySelectorAll('char');
+            });
+        })
+    );
 
-                symbols.forEach(symbol => {
-                    const charCode = symbol.getAttribute('id');
-                    let char;
-                    
-                    if (charCode === '32') { char = ' '; } 
-                    else if (charCode === '44') { char = ','; } 
-                    else { char = String.fromCharCode(parseInt(charCode, 10)); }
-
-                    const x = symbol.getAttribute('x');
-                    const y = symbol.getAttribute('y');
-                    const width = symbol.getAttribute('width');
-                    const height = symbol.getAttribute('height');
-                    const xadvance = symbol.getAttribute('xadvance') || width;
-                    const imageName = `vollkorn_96_${file}.png`;
-
-                    if (char && char.trim() !== '') {
-                        spriteMap[char] = {
-                            position: `-${x}px -${y}px`,
-                            width: `${width}px`,
-                            height: `${height}px`,
-                            advance: `${xadvance}px`,
-                            image: imageName
-                        };
-                    }
-                });
-            })
-        )
-    )
+    Promise.all([...fontPromises, waitForImages()])
     .then(() => {
-        console.log("Aset Font Sprite berhasil dimuat.");
-        
         showContent();
         if (textContainer) {
             displayNewSpriteText(textContainer, spriteMap, 'HALLO'); 
@@ -127,31 +142,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
             textContainer.classList.add('blinking-neon-animation');
         }
     })
-    .catch(error => {
-        console.error("Kesalahan Fatal Pemuatan Aset:", error);
-        
-        if (textContainer) {
-            textContainer.textContent = `Error Font: ${error.message}. Aplikasi tidak dapat berjalan.`;
-            textContainer.style.fontSize = '16px';
-            textContainer.style.color = 'red';
-            textContainer.style.visibility = 'visible';
-        }
+    .catch(() => {
         showContent(); 
     });
 
     if (A17 && A4 && A5) {
         A17.addEventListener('click', () => {
-            
             if (textContainer) {
                 textContainer.style.visibility = 'hidden';
                 textContainer.classList.remove('blinking-neon-animation');
             }
             if (A15) { A15.style.visibility = 'hidden';}
             if (A18) { A18.style.visibility = 'hidden';}
-
-            if (A12) {
-                A12.classList.remove('hidden', 'neon-effect');
-            }
+            if (A12) { A12.classList.remove('hidden', 'neon-effect'); }
             
             A4.style.transition = 'none';
             A5.style.transition = 'none';
@@ -161,20 +164,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
             setTimeout(() => {
                 const rand = Math.random();
                 let stops;
-
                 if (rand < PROBABILITY_LOW) {
                     stops = lowPriorityStops;
-                    console.log("MEMILIH: Low Priority Stop (5%)");
                 } else if (rand < PROBABILITY_LOW + PROBABILITY_MEDIUM) {
                     stops = mediumPriorityStops;
-                    console.log("MEMILIH: Medium Priority Stop (20%)");
                 } else {
                     stops = highPriorityStops;
-                    console.log("MEMILIH: High Priority Stop (75%)");
                 }
                 
                 selectedAngle = stops[Math.floor(Math.random() * stops.length)];
-
                 const totalSpins = (5 * 360) + selectedAngle;
                 const transitionDuration = 3;
                 
@@ -192,39 +190,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                     if (selectedAngle !== null && textContainer) {
                         const resultText = resultMap[selectedAngle.toString()];
-
                         if (resultText) {
                             displayNewSpriteText(textContainer, spriteMap, resultText);
-                            
                             textContainer.style.visibility = 'visible';
                             textContainer.classList.add('blinking-neon-animation');
-
-                            const JEDA_PENUTUPAN_MS = 3000; 
-                            
                             setTimeout(() => {
                                 if (window.Telegram && window.Telegram.WebApp) {
                                     const dataUntukBot = JSON.stringify({
                                         hasil_spin: resultText,
                                         sudut: selectedAngle
                                     });
-                                    
-                                    console.log("DATA DIKIRIM KE BOT:", dataUntukBot);
                                     window.Telegram.WebApp.sendData(dataUntukBot);
-                                    
                                     window.Telegram.WebApp.close(); 
-                                } else {
-                                    console.error("GAGAL! Telegram WebApp API tidak ditemukan.");
                                 }
-                            }, JEDA_PENUTUPAN_MS); 
-
-                        } else {
-                            textContainer.textContent = `ERROR: No result for ${selectedAngle}`;
+                            }, 3000); 
                         }
                     }
                 }, delayTime);
-
             }, 10);
         });
     }
-
 });

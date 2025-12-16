@@ -9,7 +9,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
     }
-    
+
+    const updateHeight = () => {
+        const vh = window.innerHeight;
+        document.body.style.height = `${vh}px`;
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.expand();
+        }
+    };
+    window.addEventListener('resize', updateHeight);
+    updateHeight();
+
     const A17 = document.querySelector('.A17');
     const A4 = document.querySelector('.A4');
     const A5 = document.querySelector('.A5');
@@ -24,11 +34,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const highPriorityStops = [405, 586, 676, 495];
     const mediumPriorityStops = [631, 450];
     const lowPriorityStops = [360, 540];
-
     const PROBABILITY_HIGH = 0.75;
     const PROBABILITY_MEDIUM = 0.20;
     const PROBABILITY_LOW = 0.05;
-
     let selectedAngle = null;
 
     const resultMap = {
@@ -39,7 +47,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let spriteMap = {};
     const files = ['1'];
 
-    function waitForImages() {
+    function waitForAssets() {
         const images = document.querySelectorAll('img');
         const bgElements = document.querySelectorAll('.scene div');
         const promises = [];
@@ -133,7 +141,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         })
     );
 
-    Promise.all([...fontPromises, waitForImages()])
+    Promise.all([...fontPromises, waitForAssets()])
     .then(() => {
         showContent();
         if (textContainer) {

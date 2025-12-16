@@ -7,6 +7,14 @@ body {
     margin: 0;
 }
 
+#game-wrapper {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    left: 0 !important;
+    margin: 0 !important;
+}
+
 #text-container {
     display: flex;
     border: 2px solid #555;
@@ -984,6 +992,7 @@ linear infinite;
     }
 
 }
+
 
 
 
